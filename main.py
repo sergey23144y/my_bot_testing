@@ -4,7 +4,16 @@ import logging
 from aiogram import Bot, Dispatcher
 
 from src.core.config import settings
-from src.handlers.start import start_router
+from src.handlers import (
+    start,
+    examples,
+    oral_part,
+    pricing,
+    reports,
+    rewriter,
+    support,
+    written_part,
+)
 
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -33,10 +42,14 @@ async def main():
     dp: Dispatcher = Dispatcher()
     dp["started_at"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
-    # dp.include_router(start.start_router)
-    # dp.include_router(orders.orders_router)
-    # dp.include_router(lesson.lesson_router)
-    dp.include_router(start_router)
+    dp.include_router(written_part.written_router)
+    dp.include_router(start.start_router)
+    dp.include_router(examples.examples_router)
+    dp.include_router(oral_part.oral_router)
+    dp.include_router(pricing.pricing_router)
+    dp.include_router(reports.reports_router)
+    dp.include_router(rewriter.rewriter_router)
+    dp.include_router(support.support_router)
 
     await bot.delete_webhook(drop_pending_updates=True)
     await dp.start_polling(bot, mylist=[1, 2, 3])

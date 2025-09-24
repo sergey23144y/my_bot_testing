@@ -6,7 +6,7 @@ def get_main_kb():
 
     kb_main.row(KeyboardButton(text="📊 Мои отчеты"))
     kb_main.row(
-        KeyboardButton(text="✍️ Письменая чать"),
+        KeyboardButton(text="✍️ Письменная часть"),
         KeyboardButton(text="🎤 Устная часть"),
     )
     kb_main.row(

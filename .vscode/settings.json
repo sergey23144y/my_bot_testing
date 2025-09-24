@@ -1,4 +1,12 @@
 {
 	"editor.defaultFormatter": "charliermarsh.ruff",
-	"notebook.defaultFormatter": "charliermarsh.ruff"
+	"notebook.defaultFormatter": "charliermarsh.ruff",
+	"spellright.language": [
+		"ru"
+	],
+	"spellright.documentTypes": [
+		"markdown",
+		"latex",
+		"plaintext"
+	]
 }

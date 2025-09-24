@@ -11,4 +11,5 @@ dependencies = [
     "logging>=0.4.9.6",
     "pydantic>=2.11.9",
     "pydantic-settings>=2.10.1",
+    "requests>=2.32.5",
 ]
