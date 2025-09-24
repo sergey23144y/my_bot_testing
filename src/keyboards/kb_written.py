@@ -1,14 +1,14 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
 from src.core.digit_emojis import number_to_digit_emojis
-from src.schemas.MockData import items
+from src.schemas.mock_data import items_38
 
 
-def get_written_kb(page: int):
+def get_written_list_task_kb(page: int):
     """Генерация клавиатуры пагинации"""
     builder = InlineKeyboardBuilder()
     kb_row = []
     for i in range((page) * 5, (page + 1) * 5):
-        if i >= len(items):  # ✅ проверка выхода за пределы
+        if i >= len(items_38):  # ✅ проверка выхода за пределы
             break
         kb_row.append(
             InlineKeyboardButton(
@@ -20,23 +20,35 @@ def get_written_kb(page: int):
         kb_row = []
     # Кнопки «Назад» и «Вперёд»
     if page > 0:
-        kb_row.append(
-            InlineKeyboardButton(text="⬅ Назад", callback_data=f"page:{page - 1}")
-        )
-    if (page + 1) * 5 < len(items):
-        kb_row.append(
-            InlineKeyboardButton(text="Вперёд ➡", callback_data=f"page:{page + 1}")
-        )
+        kb_row.append(InlineKeyboardButton(text="⬅ Назад", callback_data="prev_page"))
+    if (page + 1) * 5 < len(items_38):
+        kb_row.append(InlineKeyboardButton(text="Вперёд ➡", callback_data="next_page"))
 
     if kb_row:
         builder.row(*kb_row)
+
+    builder.row(InlineKeyboardButton(text="🏚 На главную", callback_data="home"))
     return builder.as_markup()
 
 
-def get_page_text(page: int):
+def get_written_number_tasks_kb():
+    """Генерация клавиатуры пагинации"""
+    builder = InlineKeyboardBuilder()
+
+    builder.row(
+        InlineKeyboardButton(text=number_to_digit_emojis(38), callback_data="38"),
+        InlineKeyboardButton(text=number_to_digit_emojis(39), callback_data="39"),
+        InlineKeyboardButton(text=number_to_digit_emojis(40), callback_data="40"),
+    )
+
+    builder.row(InlineKeyboardButton(text="🏚 На главную", callback_data="home"))
+    return builder.as_markup()
+
+
+def get_page_text(page: int, number_task: int):
     """Формируем текст страницы"""
     start = page * 5
     end = start + 5
-    page_items = items[start:end]
+    page_items = items_38[start:end]
     text = "\n".join(page_items)
-    return f"📄 Страница {page + 1}\n\n{text}"
+    return f"📄 Страница {page + 1}\n Вариант задачь: {number_task}\n\n{text}"
