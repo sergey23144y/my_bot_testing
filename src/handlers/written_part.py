@@ -1,14 +1,21 @@
 from aiogram import Router, F
 from aiogram.types import Message, CallbackQuery
 from aiogram.fsm.context import FSMContext
-from aiogram.filters import StateFilter
 from src.keyboards.kb_written import (
-    get_page_text,
     get_written_list_task_kb,
     get_written_number_tasks_kb,
 )
-from src.keyboards.keyboards_main import get_main_kb
 from src.states.form_task import Form_task
+from src.external_api.task_api import get_list_task
+from src.schemas.taskDTO import format_task
+
+
+def print_task(page: int, number_task: int):
+    """Формируем текст страницы"""
+    page_items = get_list_task(page, number_task, 5)
+    text = "\n\n".join(format_task(item) for item in page_items)
+    return f"📄 Страница {page + 1}\n Вариант задачь: {number_task}\n\n{text}"
+
 
 written_router = Router()
 
@@ -16,7 +23,7 @@ written_router = Router()
 @written_router.message(F.text == "✍️ Письменная часть")
 async def writing_handler(message: Message, state: FSMContext):
     await message.answer(
-        """Выберите задания: 
+        """Выберите задания:
         38 - Задание
         39 - Заданиеs
         40 - Задание
@@ -31,7 +38,7 @@ async def page_number_task(query: CallbackQuery, state: FSMContext):
     await state.update_data(number_task=query.data)
     data = await state.get_data()
     await query.message.edit_text(
-        get_page_text(0, int(data.get("number_task"))),
+        print_task(0, int(data.get("number_task"))),
         reply_markup=get_written_list_task_kb(0),
     )
 
@@ -55,27 +62,6 @@ async def page_list_task(query: CallbackQuery, state: FSMContext):
     await state.update_data(page=page)
 
     await query.message.edit_text(
-        get_page_text(page, task_number), reply_markup=get_written_list_task_kb(page)
+        print_task(page, task_number), reply_markup=get_written_list_task_kb(page)
     )
-    await query.answer()
-
-
-@written_router.callback_query(StateFilter("*"), F.data.in_(["home"]))
-async def cmd_start(query: CallbackQuery, state: FSMContext):
-    await query.message.answer(
-        """
-            Здесь ты найдёшь всё необходимое для эффективной подготовки:
-            📊 Мои отчёты — отслеживай свой прогресс.
-            📝 Письменная часть — практикуй эссе, письма и другие письменные задания.
-            🎤 Устная часть — тренируй устные ответы по формату ЕГЭ.
-            🤖 AI Рерайтер — переформулируй свои тексты с помощью умного ассистента.
-            📘 Примеры выполнения — изучай лучшие образцы высоко оценённых работ.
-            💬 Поддержка — помощь и обратная связь.
-            💰 Тарифы — выбери подходящий план и получи больше возможностей.
-            ➡️ Начни с любого раздела и двигайся к высокому результату на экзамене!
-            """,
-        reply_markup=get_main_kb(),
-    )
-
-    await state.clear()
     await query.answer()

@@ -45,10 +45,3 @@ def get_written_number_tasks_kb():
     return builder.as_markup()
 
 
-def get_page_text(page: int, number_task: int):
-    """Формируем текст страницы"""
-    start = page * 5
-    end = start + 5
-    page_items = items_38[start:end]
-    text = "\n".join(page_items)
-    return f"📄 Страница {page + 1}\n Вариант задачь: {number_task}\n\n{text}"
