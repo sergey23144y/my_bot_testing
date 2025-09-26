@@ -1,14 +1,13 @@
 from faker import Faker
-import random
 from src.schemas.taskDTO import TaskPDO
 
 
 fake = Faker("ru_RU")
 
 
-def generate_mock_task(id: int, number_task: int) -> TaskPDO:
+def generate_mock_task(task_id: int, number_task: int) -> TaskPDO:
     return TaskPDO(
-        id=id,
+        id=task_id,
         title=fake.sentence(nb_words=3),
         description=fake.text(max_nb_chars=100),
         number_task=number_task,
@@ -23,5 +22,12 @@ def get_list_task(
 ):
     task_list: list[TaskPDO] = []
     for i in range(page * limit_page, (page + 1) * limit_page):
-        task_list.append(generate_mock_task(i, number_task))
+        task_list.append(generate_mock_task(i + 1, number_task))
     return task_list
+
+
+def get_task_by_id(
+    task_id: int,
+    number_task: int,
+):
+    return generate_mock_task(task_id, number_task)

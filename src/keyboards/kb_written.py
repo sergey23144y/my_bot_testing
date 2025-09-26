@@ -45,3 +45,9 @@ def get_written_number_tasks_kb():
     return builder.as_markup()
 
 
+def get_task_actions_kb():
+    """Генерация клавиатуры пагинации"""
+    builder = InlineKeyboardBuilder()
+
+    builder.row(InlineKeyboardButton(text="🏚 На главную", callback_data="home"))
+    return builder.as_markup()
