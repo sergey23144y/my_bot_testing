@@ -1,38 +1,43 @@
 from aiogram.utils.keyboard import InlineKeyboardBuilder, InlineKeyboardButton
-from src.core.digit_emojis import number_to_digit_emojis
-from src.schemas.mock_data import items_38
+from src.utils.digit_emojis import number_to_digit_emojis
 
 
-def get_written_list_task_kb(page: int):
-    """Генерация клавиатуры пагинации"""
+def get_list_items_kb(page: int, len_task_list: int, prefix: str = "task"):
+    """
+    Генерация клавиатуры пагинации для списка элементов.
+
+    :param page: текущая страница
+    :param total_items: общее количество элементов (tasks/reports/...)
+    :param prefix: префикс для callback_data ("task", "report", ...)
+    """
     builder = InlineKeyboardBuilder()
     kb_row = []
+    # Кнопки с номерами элементов
     for i in range((page) * 5, (page + 1) * 5):
-        if i >= len(items_38):  # ✅ проверка выхода за пределы
+        if i >= len_task_list:  # ✅ проверка выхода за пределы
             break
         kb_row.append(
             InlineKeyboardButton(
-                text=number_to_digit_emojis(i + 1), callback_data=f"task:{i}"
+                text=number_to_digit_emojis(i + 1), callback_data=f"{prefix}:{i}"
             )
         )
     if kb_row:
         builder.row(*kb_row)
         kb_row = []
-    # Кнопки «Назад» и «Вперёд»
+    # Кнопки пагинации
     if page > 0:
         kb_row.append(InlineKeyboardButton(text="⬅ Назад", callback_data="prev_page"))
-    if (page + 1) * 5 < len(items_38):
+    if (page + 1) * 5 < len_task_list:
         kb_row.append(InlineKeyboardButton(text="Вперёд ➡", callback_data="next_page"))
 
     if kb_row:
         builder.row(*kb_row)
-
+    # Кнопка "домой"
     builder.row(InlineKeyboardButton(text="🏚 На главную", callback_data="home"))
     return builder.as_markup()
 
 
-def get_written_number_tasks_kb():
-    """Генерация клавиатуры пагинации"""
+def get_number_tasks_kb():
     builder = InlineKeyboardBuilder()
 
     builder.row(
@@ -45,8 +50,7 @@ def get_written_number_tasks_kb():
     return builder.as_markup()
 
 
-def get_task_actions_kb():
-    """Генерация клавиатуры пагинации"""
+def get_home_button_kb():
     builder = InlineKeyboardBuilder()
 
     builder.row(InlineKeyboardButton(text="🏚 На главную", callback_data="home"))
