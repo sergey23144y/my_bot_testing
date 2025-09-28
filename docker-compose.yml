@@ -1,0 +1,45 @@
+version: "3.9"
+
+services:
+  bot:
+    build: .
+    container_name: aiogram_bot
+    restart: unless-stopped
+    env_file:
+      - .env
+    depends_on:
+      - redis
+    volumes:
+      - .:/app
+    command: ["python", "main.py"]  # или uvicorn bot.main:app --host 0.0.0.0 --port 8000
+    networks:
+      - botnet
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - botnet
+
+  redis_insight:
+    image: redis/redisinsight:latest
+    container_name: redis_insight
+    restart: always
+    ports:
+      - "5540:5540"
+    networks:
+      - botnet
+    volumes:
+    - redisinsight_data:/data
+volumes:
+  redis_data:
+  redisinsight_data:
+
+networks:
+  botnet:
+    driver: bridge

@@ -5,10 +5,7 @@ from src.states.form_task import FormTask
 from src.handlers.constant import TASKS_TEXT, ALLOWED_TASK_NUMBERS, START_WRITING_TEXT
 from src.utils.formatters_written_part import print_task, render_task_page, change_page
 from src.external_api.task_api import get_list_task, get_task_by_id
-from src.keyboards.kb_base import (
-    get_number_tasks_kb,
-    get_home_button_kb
-)
+from src.keyboards.kb_base import get_number_tasks_kb, get_home_button_kb
 
 
 written_router = Router()

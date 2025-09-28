@@ -1,9 +1,9 @@
 import asyncio
 import logging
-
+import redis
 from aiogram import Bot, Dispatcher
-
 from src.core.config import settings
+from aiogram.fsm.storage.redis import RedisStorage
 from src.handlers import (
     start,
     examples,
@@ -30,6 +30,25 @@ async def main():
         "[%(asctime)s] - %(name)s - %(message)s",
     )
 
+    r = redis.Redis(
+        host=settings.redis_host,
+        port=settings.redis_port,
+        db=settings.redis_db,
+        username=settings.redis_user_name,
+        password=settings.redis_user_password,
+    )
+
+    try:
+        info = r.info()
+        print(info["redis_version"])
+        response = r.ping()
+        if response:
+            print("Подключение успешно!")
+        else:
+            print("Не удалось подключиться к Redis.")
+    except redis.exceptions.RedisError as e:
+        print(f"Ошибка: {e}")
+
     logger.info("Starting bot")
 
     bot: Bot = Bot(
@@ -39,7 +58,9 @@ async def main():
             # тут ещё много других интересных настроек
         ),
     )
-    dp: Dispatcher = Dispatcher()
+
+    storage = RedisStorage.from_url(settings.ger_redis_url())
+    dp: Dispatcher = Dispatcher(storage=storage)
     dp["started_at"] = datetime.now().strftime("%Y-%m-%d %H:%M")
 
     dp.include_router(written_part.written_router)
