@@ -18,6 +18,18 @@ def print_task(
     )
 
 
+def print_oral_task(
+    task_text: str,
+    number_task: int,
+) -> str:
+    return (
+        f"📄 Страница выполнения задачи\n"
+        f"📌 Вариант задачи: {number_task}\n\n"
+        f"{task_text}\n\n"
+        f"❗Ответ ожидается в виде голосового сообщения❗"
+    )
+
+
 async def render_task_page(
     query_or_message,
     page: int,

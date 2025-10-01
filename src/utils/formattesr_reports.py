@@ -1,6 +1,6 @@
 from aiogram.fsm.context import FSMContext
 from src.keyboards.kb_base import get_list_items_kb
-from src.utils.formatters_written_part import print_tasks
+from src.utils.formatters_task import print_tasks
 
 
 def print_report(

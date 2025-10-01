@@ -4,7 +4,7 @@ from aiogram.fsm.context import FSMContext
 from src.keyboards.kb_report import get_report_actions_kb
 from src.states.reporе_state import ReportState
 from src.handlers.constant import TASKS_TEXT, ALLOWED_TASK_NUMBERS, START_REPORTS_TEXT
-from src.utils.formatters_written_part import change_page
+from src.utils.formatters_task import change_page
 from src.utils.formattesr_reports import render_report_page, print_report
 from src.external_api.report_api import get_list_report, get_report_by_id
 from src.keyboards.kb_base import get_number_tasks_kb

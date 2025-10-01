@@ -7,7 +7,6 @@ from src.utils.digit_emojis import rating_stars
 
 class ReportModel(BaseModel):
     id: int
-    answer: str
     task: TaskModel
     score: int
 
@@ -19,6 +18,10 @@ class ReportModel(BaseModel):
             f"✨ Оценка: {rating_stars(self.score)}\n"
         )
 
+
+class ReportWrittenModel(BaseModel):
+    answer: str
+
     def full_display(self):
         """Возвращает читаемое строковое представление задачи"""
         return (
@@ -26,6 +29,19 @@ class ReportModel(BaseModel):
             f"📝 Название задачи: {self.task.title}\n"
             f"✨ Оценка: {rating_stars(self.score)}\n"
             f"📝 Ответ: {self.answer}\n"
+        )
+
+
+class ReportOralModel(BaseModel):
+    answer_filename: str
+
+    def full_display(self):
+        """Возвращает читаемое строковое представление задачи"""
+        return (
+            f"🆔 Задача #{self.task.id} (Номер задания: {self.task.number_task})\n"
+            f"📝 Название задачи: {self.task.title}\n"
+            f"✨ Оценка: {rating_stars(self.score)}\n"
+            f"📝 Ответ: {self.answer_filename}\n"
         )
 
 
