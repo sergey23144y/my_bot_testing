@@ -1,26 +1,72 @@
+import json
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field, field_validator
+
+from src.core.enums import NumberTask, TaskType
 
 
 class TaskModel(BaseModel):
     id: int
     title: str
-    description: str
-    number_task: int
-    author: str
+    content: str
+    type: TaskType
+    number: NumberTask
+    image_url: Optional[str] = None
+    last_solution_mark: Optional[int] = None
+    created_at: str = Field(alias="created_at")
+    updated_at: str = Field(alias="updated_at")
 
-    def __str__(self) -> str:
+    class Config:
+        fields = {
+            "created_at": "createdAt",
+            "updated_at": "updatedAt",
+        }
+
+    @field_validator("number", mode="before")
+    @classmethod
+    def validate_number(cls, v):
+        if isinstance(v, str):
+            # ищем Enum по number
+            for item in NumberTask:
+                if item.number == v:
+                    return item
+        return v
+
+    def to_string(self) -> str:
         """Возвращает читаемое строковое представление задачи"""
         return (
-            f"🆔 Задача #{self.id} (Номер задания: {self.number_task})\n"
+            f"🆔 Задача #{self.id}\n"
             f"📝 Название: {self.title}\n"
-            f"📖 Описание: {self.description}\n"
-            f"👤 Автор: {self.author}"
+            f"📖 Последняя оценка: {self.last_solution_mark + '/10' if self.last_solution_mark else '-'}\n"
         )
+
+    def to_json(self) -> str:
+        """Возвращает JSON-представление задачи"""
+        data = {
+            "id": self.id,
+            "title": self.title,
+            "content": self.content,
+            "type": self.type.value,  # Enum → строка
+            "number": self.number.to_json(),  # Enum → "37"
+        }
+        return json.dumps(data, ensure_ascii=False, indent=2)
+
+    @classmethod
+    def from_json(cls, json_str: str) -> "TaskModel":
+        """Десериализация задачи из JSON"""
+        return cls.model_validate_json(json_str)
+
+
+class MetaModel(BaseModel):
+    total_items: int = Field(alias="totalItems")
+    item_count: int = Field(alias="itemCount")
+    items_per_page: int = Field(alias="itemsPerPage")
+    total_pages: int = Field(alias="totalPages")
+    current_page: int = Field(alias="currentPage")
 
 
 class TaskListModel(BaseModel):
-    tasks: List[TaskModel]
+    tasks: List[TaskModel] = Field(alias="data")
     total: int
 
     def get_by_id(self, task_id: int) -> Optional[TaskModel]:
@@ -43,5 +89,5 @@ class TaskListModel(BaseModel):
     def get_total(self) -> int:
         return self.total
 
-    def __str__(self) -> str:
-        return "\n\n".join(str(task) for task in self.tasks)
+    def to_string(self) -> str:
+        return "\n\n".join(task.to_string() for task in self.tasks)

@@ -1,52 +1,56 @@
+from datetime import datetime
 from typing import List, Optional
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
+from src.core.enums import TaskType
 from src.schemas.Task.task_model import TaskModel
-from src.utils.digit_emojis import rating_stars
+
+
+class SolutionModal(BaseModel):
+    id: int
+    content: str
+    created_at: datetime = Field(alias="created_at")
+    task_id: int
+    task: Optional[TaskModel] = None
 
 
 class ReportModel(BaseModel):
     id: int
-    task: TaskModel
-    score: int
+    solution: SolutionModal
+    mark: int | None
+    analysis: str | None
 
-    def __str__(self) -> str:
+    def to_string(self) -> str:
         """Возвращает читаемое строковое представление задачи"""
         return (
-            f"🆔 Задача #{self.task.id} (Номер задания: {self.task.number_task})\n"
-            f"📝 Название задачи: {self.task.title}\n"
-            f"✨ Оценка: {rating_stars(self.score)}\n"
+            f"📅{self.solution.created_at} | {'🎤' if (self.solution.task.type == TaskType.WRITING) else '📝'} {self.solution.task.title}\n"
+            f"🔄Статус: {'✅Завершено' if self.mark else '⏳ В процессе'}\n"
+            f"✨ Оценка: {self.mark if self.mark else '-'}/10\n"
         )
 
+    def full_display(self) -> str:
+        """Возвращает читаемое строковое представление задачи для пользователя (id не включается)"""
+        # Эмодзи для типа задачи
+        type_emoji = "🎤" if self.solution.task.type == TaskType.WRITING else "📝"
 
-class ReportWrittenModel(BaseModel):
-    answer: str
+        # Статус выполнения
+        status = "✅ Завершено" if self.mark is not None else "⏳ В процессе"
 
-    def full_display(self):
-        """Возвращает читаемое строковое представление задачи"""
+        # Оценка в виде звезд
+        rating = self.mark if self.mark is not None else "-" + "/10"
+
+        # Формируем текст
         return (
-            f"🆔 Задача #{self.task.id} (Номер задания: {self.task.number_task})\n"
-            f"📝 Название задачи: {self.task.title}\n"
-            f"✨ Оценка: {rating_stars(self.score)}\n"
-            f"📝 Ответ: {self.answer}\n"
-        )
-
-
-class ReportOralModel(BaseModel):
-    answer_filename: str
-
-    def full_display(self):
-        """Возвращает читаемое строковое представление задачи"""
-        return (
-            f"🆔 Задача #{self.task.id} (Номер задания: {self.task.number_task})\n"
-            f"📝 Название задачи: {self.task.title}\n"
-            f"✨ Оценка: {rating_stars(self.score)}\n"
-            f"📝 Ответ: {self.answer_filename}\n"
+            f"{type_emoji}  {self.solution.task.title}\n"
+            f"📅 Дата: {self.solution.created_at}\n"
+            f"🔄 Статус: {status}\n"
+            f"✨ Оценка: {rating}\n"
+            f"📝 Ответ:\n{self.solution.content}"
         )
 
 
 class ReportListModel(BaseModel):
-    reports: List[ReportModel]
+    reports: List[ReportModel] = Field(alias="data")
     total: int
 
     def get_by_id(self, report_id: int) -> Optional[ReportModel]:
@@ -56,5 +60,5 @@ class ReportListModel(BaseModel):
     def get_total(self) -> int:
         return self.total
 
-    def __str__(self) -> str:
-        return "\n\n".join(str(report) for report in self.reports)
+    def to_string(self) -> str:
+        return "\n\n".join(report.to_string() for report in self.reports)

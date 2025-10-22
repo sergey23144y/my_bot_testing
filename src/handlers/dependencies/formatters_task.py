@@ -1,18 +1,25 @@
+import logging
 from aiogram.fsm.context import FSMContext
+from src.schemas.Task.task_model import TaskListModel
+from src.core.enums import NumberTask
 from src.keyboards.kb_base import get_list_items_kb
 
+logger = logging.getLogger(__name__)
 
-def print_tasks(page: int, number_task: int, task_text: str) -> str:
-    return f"📄 Страница {page + 1}\n📌 Вариант задачи: {number_task}\n\n{task_text}"
+
+def print_tasks(page: int, number_task: NumberTask, task_text: str) -> str:
+    return (
+        f"📄 Страница {page + 1}\n📌 Задача: {number_task.description}\n\n{task_text}"
+    )
 
 
 def print_task(
     task_text: str,
-    number_task: int,
+    number_task: NumberTask,
 ) -> str:
     return (
         f"📄 Страница выполнения задачи\n"
-        f"📌 Вариант задачи: {number_task}\n\n"
+        f"📌 Задачи: {number_task.description}\n\n"
         f"{task_text}\n\n"
         f"❗Выполните задачу в сообщении. И отправте его❗"
     )
@@ -20,11 +27,11 @@ def print_task(
 
 def print_oral_task(
     task_text: str,
-    number_task: int,
+    number_task: NumberTask,
 ) -> str:
     return (
         f"📄 Страница выполнения задачи\n"
-        f"📌 Вариант задачи: {number_task}\n\n"
+        f"📌 Задачи: {number_task.description}\n\n"
         f"{task_text}\n\n"
         f"❗Ответ ожидается в виде голосового сообщения❗"
     )
@@ -33,15 +40,14 @@ def print_oral_task(
 async def render_task_page(
     query_or_message,
     page: int,
-    task_number: int,
-    task_text: str,
-    len_task_list: int,
+    task_number: NumberTask,
+    tasks: TaskListModel,
     state: FSMContext,
 ):
     await state.update_data(page=page)
     await query_or_message.edit_text(
-        print_tasks(page, task_number, task_text),
-        reply_markup=get_list_items_kb(page, len_task_list),
+        print_tasks(page, task_number, tasks.to_string()),
+        reply_markup=get_list_items_kb(page, tasks.tasks, tasks.get_total()),
     )
 
 

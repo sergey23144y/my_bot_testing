@@ -1,35 +1,52 @@
-from faker import Faker
+import logging
+from typing import Optional
+
+from src.external_api.dependencies._make_request import _make_request
+from src.external_api.http_client import http_client
+from src.core.enums import NumberTask, TaskType
 from src.schemas.Task.task_model import TaskModel, TaskListModel
+from src.utils.redis_client import get_jwt_from_redis
+
+logger = logging.getLogger(__name__)
 
 
-fake = Faker("ru_RU")
-
-MOCK_TOTAL = 40
-
-
-def generate_mock_task(task_id: int, number_task: int) -> TaskModel:
-    return TaskModel(
-        id=task_id,
-        title=fake.sentence(nb_words=3),
-        description=fake.text(max_nb_chars=100),
-        number_task=number_task,
-        author=fake.name(),
+async def fetch_list_task(
+    page: int = 1,
+    limit: int = 5,
+    number: NumberTask | None = None,
+    type: TaskType | None = None,
+    telegram_id: int | None = None,
+) -> Optional[TaskListModel]:
+    return await _make_request(
+        telegram_id=telegram_id,
+        method="GET",
+        endpoint="/tasks/writing",
+        model=TaskListModel,
+        params={"page": page, "limit": limit},
     )
 
 
-def get_list_task(
-    page: int,
-    number_task: int,
-    limit_page: int = 5,
-) -> TaskListModel:
-    task_list: list[TaskModel] = []
-    for i in range(page * limit_page, (page + 1) * limit_page):
-        task_list.append(generate_mock_task(i + 1, number_task))
-    return TaskListModel(tasks=task_list, total=MOCK_TOTAL)
-
-
-def get_task_by_id(
+async def fetch_task_by_id(
     task_id: int,
-    number_task: int,
-) -> TaskModel:
-    return generate_mock_task(task_id, number_task)
+    telegram_id: int | None = None,
+) -> Optional[TaskModel]:
+    return await _make_request(
+        telegram_id=telegram_id,
+        method="GET",
+        endpoint=f"/tasks/writing/{task_id}",
+        model=TaskModel,
+    )
+
+
+async def send_solutions(telegram_id: int, task_id: int, content: str) -> bool:
+    async with http_client as client:
+        token = await get_jwt_from_redis(telegram_id)
+        headers = {"Authorization": f"Bearer {token}"}
+        response = await client.post(
+            f"/tasks/writing/{task_id}/solutions",
+            json={"content": content},
+            headers=headers,
+        )
+        if response.status_code != 201:
+            return False
+        return True
