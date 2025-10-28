@@ -32,13 +32,17 @@ class TaskModel(BaseModel):
                     return item
         return v
 
-    def to_string(self) -> str:
+    def to_string(self, IsPrintContent: bool = False) -> str:
         """Возвращает читаемое строковое представление задачи"""
-        return (
+        text = (
             f"🆔 Задача #{self.id}\n"
             f"📝 Название: {self.title}\n"
             f"📖 Последняя оценка: {self.last_solution_mark + '/10' if self.last_solution_mark else '-'}\n"
         )
+
+        if IsPrintContent:
+            text += f"📝 Текст задачи: {self.content}\n"
+        return text
 
     def to_json(self) -> str:
         """Возвращает JSON-представление задачи"""

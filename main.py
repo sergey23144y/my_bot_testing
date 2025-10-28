@@ -1,13 +1,11 @@
 import asyncio
 import logging
-from aiogram import Bot, Dispatcher
+from aiogram import Dispatcher
 from aiogram.fsm.storage.redis import RedisStorage
-from aiogram.client.default import DefaultBotProperties
-from aiogram.enums import ParseMode
 from datetime import datetime
 
 from src.handlers import main_router
-from src.core.config import settings
+from src.core.config import settings, bot
 from src.utils.redis_client import init_redis
 
 logger = logging.getLogger(__name__)
@@ -21,11 +19,6 @@ async def main():
     )
     await init_redis()
     logger.info("Starting bot")
-
-    bot: Bot = Bot(
-        token=settings.BOT_TOKEN,
-        default=DefaultBotProperties(parse_mode=ParseMode.HTML),
-    )
 
     storage = RedisStorage.from_url(settings.ger_redis_url())
     dp: Dispatcher = Dispatcher(storage=storage)

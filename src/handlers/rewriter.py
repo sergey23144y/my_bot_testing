@@ -1,10 +1,14 @@
 from aiogram import Router, F
-from aiogram.types import Message
-
+from aiogram.types import CallbackQuery
+from src.keyboards.kb_base import get_home_button_kb
 
 rewriter_router = Router()
 
 
-@rewriter_router.message(F.text == "🤖 AI Рерайтинг")
-async def rewriter_handler(message: Message):
-    await message.answer("Переформулировка текста 🤖")
+@rewriter_router.callback_query(F.data == "Рерайтинг")
+async def rewriter_handler(
+    query: CallbackQuery,
+):
+    await query.message.edit_text(
+        "Переформулировка текста 🤖", reply_markup=get_home_button_kb()
+    )

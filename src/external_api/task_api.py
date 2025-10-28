@@ -20,9 +20,9 @@ async def fetch_list_task(
     return await _make_request(
         telegram_id=telegram_id,
         method="GET",
-        endpoint="/tasks/writing",
+        endpoint="/tasks/writing/",
         model=TaskListModel,
-        params={"page": page, "limit": limit},
+        params={"page": page, "limit": limit, "number": number.number},
     )
 
 

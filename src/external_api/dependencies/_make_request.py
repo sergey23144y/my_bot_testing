@@ -22,6 +22,7 @@ async def _make_request(
     token = await get_jwt_from_redis(telegram_id)
     headers = {"Authorization": f"Bearer {token}"}
     kwargs.setdefault("headers", headers)
+    logger.info(f"HTTP {headers}")
 
     async with http_client as client:
         try:

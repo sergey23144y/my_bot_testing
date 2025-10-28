@@ -10,4 +10,4 @@ async def send_error_message(message_or_query, text: str):
         if isinstance(message_or_query, CallbackQuery)
         else message_or_query
     )
-    await target.answer(text, reply_markup=get_home_button_kb())
+    await target.edit_text(text, reply_markup=get_home_button_kb())

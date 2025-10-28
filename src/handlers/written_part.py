@@ -7,8 +7,8 @@ from src.core.enums import NumberTask, TaskType
 from src.handlers.dependencies.filters import NumberTaskFilter
 from src.handlers.dependencies.constant import (
     WRITING_TASKS_TEXT,
-    START_WRITING_TEXT,
 )
+from src.core.config import bot
 from src.states.form_task import FormTask
 from src.handlers.dependencies.formatters_task import (
     print_task,
@@ -22,10 +22,11 @@ from src.keyboards.kb_base import get_number_tasks_kb, get_home_button_kb
 written_router = Router()
 
 
-@written_router.message(F.text == "✍️ Письменная часть")
-async def writing_handler(message: Message, state: FSMContext):
-    await message.answer(START_WRITING_TEXT, reply_markup=ReplyKeyboardRemove())
-    await message.answer(WRITING_TASKS_TEXT, reply_markup=get_number_tasks_kb())
+@written_router.callback_query(F.data == "Письменная")
+async def writing_handler(query: CallbackQuery, state: FSMContext):
+    await query.message.edit_text(
+        WRITING_TASKS_TEXT, reply_markup=get_number_tasks_kb()
+    )
     await state.set_state(FormTask.choosing_task_number)
 
 
@@ -34,7 +35,7 @@ async def page_number_task(query: CallbackQuery, number: NumberTask, state: FSMC
     await state.update_data(number=number.to_json())
 
     list_task = await fetch_list_task(
-        1, number=number, type=TaskType.WRITING, telegram_id=query.from_user.id
+        1, number=number, type=TaskType.WRITING, telegram_id=query.message.chat.id,
     )
 
     if not list_task:
@@ -64,7 +65,10 @@ async def page_list_task(query: CallbackQuery, state: FSMContext):
 
     page = change_page(page, query.data)
     list_task = await fetch_list_task(
-        page, number=task_number, type=TaskType.WRITING, telegram_id=query.from_user.id
+        page,
+        number=task_number,
+        type=TaskType.WRITING,
+        telegram_id=query.message.chat.id,
     )
 
     if not list_task:
@@ -88,15 +92,31 @@ async def page_completing_task(query: CallbackQuery, state: FSMContext):
         await state.clear()
         return
 
-    task = await fetch_task_by_id(task_id, telegram_id=query.from_user.id)
+    task = await fetch_task_by_id(task_id, telegram_id=query.message.chat.id)
     if not task:
         await send_error_message(query, "❌ Не удалось загрузить задание.")
         return
 
-    await query.message.edit_text(
-        print_task(task.to_string(), task_number), reply_markup=get_home_button_kb()
-    )
-
+    if task_number == NumberTask.TASK_38 and task.image_url:
+        try:
+            await query.message.delete()
+            await query.message.answer_photo(
+                task.image_url,
+                caption=task.to_string(True),
+                reply_markup=get_home_button_kb(),
+            )
+        except Exception:
+            await query.message.answer(
+                "😓 Не получилось загрузить картинку\n\n"
+                + print_task(task.to_string(True), task_number),
+                reply_markup=get_home_button_kb(),
+            )
+    else:
+        await query.message.edit_text(
+            print_task(task.to_string(True), task_number),
+            reply_markup=get_home_button_kb(),
+        )
+    await state.update_data(message_id=query.message.message_id)
     await query.answer()
     await state.set_state(FormTask.completing_task)
 
@@ -106,6 +126,7 @@ async def handle_task_message(message: Message, state: FSMContext):
     user_answer = message.text
     data = await state.get_data()
     selected_task = int(data.get("selected_task"))
+    old_message_id = data.get("message_id")
 
     if not selected_task:
         await send_error_message(
@@ -113,6 +134,12 @@ async def handle_task_message(message: Message, state: FSMContext):
         )
         await state.clear()
         return
+
+    await bot.edit_message_reply_markup(
+        chat_id=message.chat.id,
+        message_id=old_message_id,
+        reply_markup=None,
+    )
 
     result = await send_solutions(message.from_user.id, selected_task, user_answer)
     if result:

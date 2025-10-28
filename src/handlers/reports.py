@@ -20,19 +20,23 @@ reports_router = Router()
 
 
 async def page_number_reports(message: Message, state: FSMContext, page: int = 1):
-    list_report = await fetch_list_report(message.from_user.id, page)
+    list_report = await fetch_list_report(message.chat.id, page)
     if not list_report:
         await send_error_message(message, "❌ Не удалось загрузить список отчетов.")
+        return
+    if len(list_report.reports) == 0 or not list_report.reports:
+        await send_error_message(message, "⚠ У вас еще нет отчетов")
         return
 
     await send_or_edit_report(message, page, list_report, state, "answer")
 
 
-@reports_router.message(F.text == "📊 Мои отчеты")
-async def reports_handler(message: Message, state: FSMContext):
-    await message.delete()
-    await message.answer(START_REPORTS_TEXT, reply_markup=ReplyKeyboardRemove())
-    await page_number_reports(message, state)
+@reports_router.callback_query(F.data == "Отчеты")
+async def reports_handler(query: CallbackQuery, state: FSMContext):
+    await query.message.edit_text(
+        START_REPORTS_TEXT
+    )
+    await page_number_reports(query.message, state)
     await state.set_state(ReportState.browsing_reports)
 
 

@@ -18,11 +18,11 @@ async def cmd_start(message: Message):
     result = await register_user(message.from_user.id, message.from_user.username)
     if result is None:
         await message.answer("Произошла ошибка при регистрации")
-    await store_jwt_in_redis(message.from_user.id, result["access_token"])
+    await store_jwt_in_redis(message.chat.id, result["access_token"])
 
 
 @start_router.callback_query(StateFilter("*"), F.data.in_(["home"]))
 async def home_page(query: CallbackQuery, state: FSMContext):
-    await query.message.answer(WELCOME_TEXT, reply_markup=get_main_kb())
+    await query.message.edit_text(WELCOME_TEXT, reply_markup=get_main_kb())
     await state.clear()
     await query.answer()
