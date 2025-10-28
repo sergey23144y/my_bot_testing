@@ -41,7 +41,12 @@ class TaskModel(BaseModel):
         )
 
         if IsPrintContent:
-            text += f"📝 Текст задачи: {self.content}\n"
+            text = (
+                f"🆔 Задача #{self.id}\n"
+                f"📝 Название: {self.title}\n\n"
+                f"📖 Последняя оценка: {self.last_solution_mark + '/10' if self.last_solution_mark else '-'}\n\n"
+                f"📝 Текст задачи: {self.content}\n"
+            )
         return text
 
     def to_json(self) -> str:

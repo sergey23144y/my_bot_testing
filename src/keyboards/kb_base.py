@@ -27,10 +27,10 @@ def get_list_items_kb(
     if items:
         buttons = [
             InlineKeyboardButton(
-                text=number_to_digit_emojis(getattr(item, "id", "?")),
+                text=number_to_digit_emojis(index + 1),
                 callback_data=f"{prefix}:{getattr(item, 'id', 0)}",
             )
-            for item in items
+            for index, item in enumerate(items)
         ]
         builder.row(*buttons)
 
