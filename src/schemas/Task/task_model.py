@@ -37,14 +37,14 @@ class TaskModel(BaseModel):
         text = (
             f"🆔 Задача #{self.id}\n"
             f"📝 Название: {self.title}\n"
-            f"📖 Последняя оценка: {self.last_solution_mark + '/10' if self.last_solution_mark else '-'}\n"
+            f"📖 Последняя оценка: {str(self.last_solution_mark) + '/10' if self.last_solution_mark else '-'}\n"
         )
 
         if IsPrintContent:
             text = (
                 f"🆔 Задача #{self.id}\n"
                 f"📝 Название: {self.title}\n\n"
-                f"📖 Последняя оценка: {self.last_solution_mark + '/10' if self.last_solution_mark else '-'}\n\n"
+                f"📖 Последняя оценка: {str(self.last_solution_mark) + '/10' if self.last_solution_mark else '-'}\n\n"
                 f"📝 Текст задачи: {self.content}\n"
             )
         return text
