@@ -9,7 +9,7 @@ examples_router = Router()
 
 @examples_router.callback_query(F.data == "Примеры")
 async def examples_handler(query: CallbackQuery):
-    await query.message.answer(
+    await query.message.edit_text(
         "Здесь будут примеры решения заданий",
         reply_markup=get_home_button_kb(),
     )
