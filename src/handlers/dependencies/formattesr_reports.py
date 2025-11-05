@@ -28,7 +28,7 @@ async def send_or_edit_report(
     keyboard = get_list_items_kb(page, data.reports, data.get_total(), prefix="report")
 
     if mode == "edit" and isinstance(query_or_message, CallbackQuery):
-        await query_or_message.edit_text(text, reply_markup=keyboard)
+        await query_or_message.message.edit_text(text, reply_markup=keyboard)
     else:
         await query_or_message.answer(text, reply_markup=keyboard)
 

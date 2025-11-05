@@ -19,7 +19,8 @@ from src.states.form_task import FormTask
 reports_router = Router()
 
 
-async def page_number_reports(message: Message, state: FSMContext, page: int = 1):
+async def page_number_reports(query: CallbackQuery, state: FSMContext, page: int = 1):
+    message = query.message
     list_report = await fetch_list_report(message.chat.id, page)
     if not list_report:
         await send_error_message(message, "❌ Не удалось загрузить список отчетов.")
@@ -28,15 +29,15 @@ async def page_number_reports(message: Message, state: FSMContext, page: int = 1
         await send_error_message(message, "⚠ У вас еще нет отчетов")
         return
 
-    await send_or_edit_report(message, page, list_report, state, "answer")
+    await send_or_edit_report(query, page, list_report, state, "edit")
 
 
 @reports_router.callback_query(F.data == "Отчеты")
 async def reports_handler(query: CallbackQuery, state: FSMContext):
-    await query.message.edit_text(
-        START_REPORTS_TEXT
-    )
-    await page_number_reports(query.message, state)
+    # await query.message.edit_text(
+    #     START_REPORTS_TEXT
+    # )
+    await page_number_reports(query, state)
     await state.set_state(ReportState.browsing_reports)
 
 
@@ -55,7 +56,7 @@ async def page_list_reports(query: CallbackQuery, state: FSMContext):
         return
 
     page = change_page(page, query.data)
-    await page_number_reports(query.message, state, page)
+    await page_number_reports(query, state, page)
 
     await query.answer()
 

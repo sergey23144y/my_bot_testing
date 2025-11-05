@@ -46,7 +46,7 @@ class ReportModel(BaseModel):
             f"📅 <b>Дата решения:</b> {self.solution.created_at}\n"
             f"🔄 <b>Статус:</b> {status}\n"
             f"✨ <b>Оценка:</b> {rating}\n\n"
-            f"📝 <b>Ваше решение:</b> \n{self.solution.content}"
+            f"📝 <b>Ваше решение:</b>\n<i>{self.solution.content}</i>"
         )
 
 
