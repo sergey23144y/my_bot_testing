@@ -99,7 +99,7 @@ async def page_completing_task(query: CallbackQuery, state: FSMContext):
     if not task:
         await send_error_message(query, "❌ Не удалось загрузить задание.")
         return
-    message = ""
+
     if task_number == NumberTask.TASK_38 and task.image_url:
         try:
             await query.message.delete()

@@ -9,7 +9,9 @@ logger = logging.getLogger(__name__)
 
 def print_tasks(page: int, number_task: NumberTask, task_text: str) -> str:
     return (
-        f"📄 Страница {page + 1}\n📌 Задача: {number_task.description}\n\n{task_text}"
+        f"📄 <i>Страница {page}</i>\n\n"
+        f"📌 <b>Задание:</b> {number_task.description}\n\n"
+        f"{task_text}"
     )
 
 
@@ -18,10 +20,10 @@ def print_task(
     number_task: NumberTask,
 ) -> str:
     return (
-        f"📄 Страница выполнения задачи\n"
-        f"📌 Задачи: {number_task.description}\n\n"
+        f"📄 <i>Страница выполнения задания</i>\n\n"
+        f"📌 <b>Задание:</b> {number_task.description}\n\n"
         f"{task_text}\n\n"
-        f"❗Выполните задачу в сообщении. И отправте его❗"
+        f"❗Отправьте решение задания в текстовом сообщении"
     )
 
 
@@ -30,10 +32,10 @@ def print_oral_task(
     number_task: NumberTask,
 ) -> str:
     return (
-        f"📄 Страница выполнения задачи\n"
+        f"📄 <i>Страница выполнения задания</i>\n\n"
         f"📌 Задачи: {number_task.description}\n\n"
         f"{task_text}\n\n"
-        f"❗Ответ ожидается в виде голосового сообщения❗"
+        f"❗Отправьте решение задания в голосовом сообщении"
     )
 
 

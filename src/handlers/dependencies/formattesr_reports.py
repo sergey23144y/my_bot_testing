@@ -7,10 +7,11 @@ from src.keyboards.kb_base import get_list_items_kb
 logger = logging.getLogger(__name__)
 
 
-def print_report(
-    report_text: str,
-) -> str:
-    return f"📄 Страница отчета\n\n{report_text}\n\n"
+def print_report(report_text: str) -> str:
+    return (
+        f"📄 <i>Страница отчета</i>\n\n"
+        f"{report_text}\n\n"
+    )
 
 
 async def send_or_edit_report(
@@ -33,4 +34,7 @@ async def send_or_edit_report(
 
 
 def print_reports(page: int, task_text: str) -> str:
-    return f"📄 Страница {page + 1}\n\n{task_text}"
+    return (
+        f"📄 <i>Страница {page}</i>\n\n"
+        f"{task_text}"
+    )

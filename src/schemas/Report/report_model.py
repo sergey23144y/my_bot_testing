@@ -23,9 +23,10 @@ class ReportModel(BaseModel):
     def to_string(self) -> str:
         """Возвращает читаемое строковое представление задачи"""
         return (
-            f"📅{self.solution.created_at} | {'🎤' if (self.solution.task.type == TaskType.WRITING) else '📝'} {self.solution.task.title}\n"
-            f"🔄Статус: {'✅Завершено' if self.mark else '⏳ В процессе'}\n"
-            f"✨ Оценка: {self.mark if self.mark else '-'}/10\n"
+            f"{'🎤' if (self.solution.task.type == TaskType.WRITING) else '📝'} <b>Задание:</b> {self.solution.task.title}\n"
+            f"📅 <b>Дата решения:</b> {self.solution.created_at.strftime('%Y-%m-%d %H:%M:%S')}\n"
+            f"🔄 <b>Статус:</b> {'✅Проверено' if self.mark else '⏳ В процессе проверки'}\n"
+            f"✨ <b>Оценка:</b> {self.mark if self.mark else '-'}\n"
         )
 
     def full_display(self) -> str:
@@ -37,15 +38,15 @@ class ReportModel(BaseModel):
         status = "✅ Завершено" if self.mark is not None else "⏳ В процессе"
 
         # Оценка в виде звезд
-        rating = self.mark if self.mark is not None else "-" + "/10"
+        rating = self.mark if self.mark is not None else "-"
 
         # Формируем текст
         return (
-            f"{type_emoji}  {self.solution.task.title}\n"
-            f"📅 Дата: {self.solution.created_at}\n"
-            f"🔄 Статус: {status}\n"
-            f"✨ Оценка: {rating}\n"
-            f"📝 Ответ:\n{self.solution.content}"
+            f"{type_emoji} <b>Задание</b>: {self.solution.task.title}\n"
+            f"📅 <b>Дата решения:</b> {self.solution.created_at}\n"
+            f"🔄 <b>Статус:</b> {status}\n"
+            f"✨ <b>Оценка:</b> {rating}\n\n"
+            f"📝 <b>Ваше решение:</b> \n{self.solution.content}"
         )
 
 

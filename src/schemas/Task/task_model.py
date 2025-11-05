@@ -35,17 +35,17 @@ class TaskModel(BaseModel):
     def to_string(self, IsPrintContent: bool = False) -> str:
         """Возвращает читаемое строковое представление задачи"""
         text = (
-            f"🆔 Задача #{self.id}\n"
-            f"📝 Название: {self.title}\n"
-            f"📖 Последняя оценка: {str(self.last_solution_mark) + '/10' if self.last_solution_mark else '-'}\n"
+            # f"🆔 Задача #{self.id}\n"
+            f"📝 <b>Название:</b> {self.title}\n"
+            f"📖 <b>Последняя оценка:</b> {self.last_solution_mark if self.last_solution_mark else '-'}\n"
         )
 
         if IsPrintContent:
             text = (
-                f"🆔 Задача #{self.id}\n"
-                f"📝 Название: {self.title}\n\n"
-                f"📖 Последняя оценка: {str(self.last_solution_mark) + '/10' if self.last_solution_mark else '-'}\n\n"
-                f"📝 Текст задачи: {self.content}\n"
+                # f"🆔 Задача #{self.id}\n"
+                f"📝 <b>Название:</b> {self.title}\n\n"
+                f"📖 <b>Последняя оценка:</b> {self.last_solution_mark if self.last_solution_mark else '-'}\n\n"
+                f"📝 <b>Текст задачи:</b> {self.content}\n"
             )
         return text
 
