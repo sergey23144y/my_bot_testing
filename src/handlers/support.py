@@ -9,5 +9,6 @@ support_router = Router()
 @support_router.callback_query(F.data == "Поддержка")
 async def support_handler(query: CallbackQuery,):
     await query.message.edit_text(
-        "Напишите свой вопрос 💬", reply_markup=get_home_button_kb()
+        "💬 Этот раздел находится в разработке!",
+        reply_markup=get_home_button_kb(),
     )

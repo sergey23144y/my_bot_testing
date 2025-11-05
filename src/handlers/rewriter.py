@@ -6,9 +6,8 @@ rewriter_router = Router()
 
 
 @rewriter_router.callback_query(F.data == "Рерайтинг")
-async def rewriter_handler(
-    query: CallbackQuery,
-):
+async def rewriter_handler(query: CallbackQuery):
     await query.message.edit_text(
-        "Переформулировка текста 🤖", reply_markup=get_home_button_kb()
+        "🤖Этот раздел находится в разработке!",
+        reply_markup=get_home_button_kb(),
     )

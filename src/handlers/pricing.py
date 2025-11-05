@@ -7,9 +7,8 @@ pricing_router = Router()
 
 
 @pricing_router.callback_query(F.data == "Тарифы")
-async def tariffs_handler(
-    query: CallbackQuery,
-):
+async def tariffs_handler(query: CallbackQuery):
     await query.message.edit_text(
-        "💳 Тарифы пока что не доступны", reply_markup=get_home_button_kb()
+        "💳 Этот раздел находится в разработке!",
+        reply_markup=get_home_button_kb(),
     )
