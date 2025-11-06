@@ -105,7 +105,7 @@ async def page_completing_task(query: CallbackQuery, state: FSMContext):
             await query.message.delete()
             message = await query.message.answer_photo(
                 task.image_url,
-                caption=task.to_string(True),
+                caption=print_task(task.to_string(True), task_number),
                 reply_markup=get_home_button_kb(),
             )
         except Exception:
