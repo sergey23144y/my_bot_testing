@@ -2,7 +2,17 @@ import json
 from typing import List, Optional
 from pydantic import BaseModel, Field, field_validator
 
+from src.core.config import logger
 from src.core.enums import NumberTask, TaskType
+
+
+def _escape_text(text: str) -> str:
+    return (
+        text
+        .replace('<p>', '\n\n')
+        .replace('</p>', '')
+        .replace('<br>', '\n')
+    )
 
 
 class TaskModel(BaseModel):
@@ -45,9 +55,9 @@ class TaskModel(BaseModel):
                 # f"🆔 Задача #{self.id}\n"
                 f"📝 <b>Название:</b> {self.title}\n\n"
                 f"📖 <b>Последняя оценка:</b> {self.last_solution_mark if self.last_solution_mark else '-'}\n\n"
-                f"📝 <b>Текст задачи:</b> {self.content}\n"
+                f"📝 <b>Текст задания:</b>\n{self.content}\n"
             )
-        return text
+        return _escape_text(text)
 
     def to_json(self) -> str:
         """Возвращает JSON-представление задачи"""
