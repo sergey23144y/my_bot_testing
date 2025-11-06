@@ -8,6 +8,7 @@ from src.utils.redis_client import store_jwt_in_redis
 from src.external_api.auth_api import register_user
 from src.keyboards.keyboards_main import get_main_kb
 from src.handlers.dependencies.constant import WELCOME_TEXT
+from src.states.form_task import FormTask
 
 start_router = Router()
 
@@ -23,6 +24,12 @@ async def cmd_start(message: Message):
 
 @start_router.callback_query(StateFilter("*"), F.data.in_(["home"]))
 async def home_page(query: CallbackQuery, state: FSMContext):
-    await query.message.edit_text(WELCOME_TEXT, reply_markup=get_main_kb())
+    current_state = await state.get_state()
+    if current_state == FormTask.completing_task:
+        await query.message.delete()
+        await query.message.answer(WELCOME_TEXT, reply_markup=get_main_kb())
+    else:
+        await query.message.edit_text(WELCOME_TEXT, reply_markup=get_main_kb())
+
     await state.clear()
     await query.answer()
