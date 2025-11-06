@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field
 
 from src.core.enums import TaskType
 from src.schemas.Task.task_model import TaskModel
+from src.utils.text import escape_text_from_admin_panel
 
 
 class SolutionModal(BaseModel):
@@ -46,7 +47,8 @@ class ReportModel(BaseModel):
             f"📅 <b>Дата решения:</b> {self.solution.created_at}\n"
             f"🔄 <b>Статус:</b> {status}\n"
             f"✨ <b>Оценка:</b> {rating}\n\n"
-            f"📝 <b>Ваше решение:</b>\n<i>{self.solution.content}</i>"
+            f"📝 <b>Ваше решение:</b>\n<i>{self.solution.content}</i>\n\n"
+            f"📃 <b>Анализ решения:</b>\n<i>{escape_text_from_admin_panel(self.analysis) if self.analysis else '-'}</i>"
         )
 
 
