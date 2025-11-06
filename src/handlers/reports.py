@@ -74,7 +74,7 @@ async def page_completing_reports(query: CallbackQuery, state: FSMContext):
         return
 
     # await state.update_data(number=report.task.number.to_json())
-
+    await state.update_data(number=report.solution.task.number.to_json())
     await query.message.edit_text(
         print_report(report.full_display()),
         reply_markup=get_report_actions_kb(report.solution.task_id),
