@@ -4,6 +4,7 @@ from pydantic import BaseModel, Field, field_validator
 
 from src.core.enums import NumberTask, TaskType
 from src.utils.text import escape_text_from_admin_panel
+from src.utils.digit_emojis import number_to_digit_emojis
 
 
 class TaskModel(BaseModel):
@@ -33,10 +34,10 @@ class TaskModel(BaseModel):
                     return item
         return v
 
-    def to_string(self, IsPrintContent: bool = False) -> str:
+    def to_string(self, numberTask: int = 0, IsPrintContent: bool = False) -> str:
         """Возвращает читаемое строковое представление задачи"""
         text = (
-            # f"🆔 Задача #{self.id}\n"
+            f"🆔 Задача #{number_to_digit_emojis(numberTask)}\n"
             f"📝 <b>Название:</b> {self.title}\n"
             f"📖 <b>Последняя оценка:</b> {self.last_solution_mark if self.last_solution_mark else '-'}\n"
         )
@@ -100,4 +101,6 @@ class TaskListModel(BaseModel):
         return self.total
 
     def to_string(self) -> str:
-        return "\n\n".join(task.to_string() for task in self.tasks)
+        return "\n\n".join(
+            task.to_string(index + 1) for index, task in enumerate(self.tasks)
+        )

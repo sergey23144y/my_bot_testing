@@ -5,6 +5,7 @@ from pydantic import BaseModel, Field
 from src.core.enums import TaskType
 from src.schemas.Task.task_model import TaskModel
 from src.utils.text import escape_text_from_admin_panel
+from src.utils.digit_emojis import number_to_digit_emojis
 
 
 class SolutionModal(BaseModel):
@@ -21,9 +22,13 @@ class ReportModel(BaseModel):
     mark: int | None
     analysis: str | None
 
-    def to_string(self) -> str:
+    def to_string(
+        self,
+        numberReport: int = 0,
+    ) -> str:
         """Возвращает читаемое строковое представление задачи"""
         return (
+            f"🆔 Отчет: #{number_to_digit_emojis(numberReport)}\n"
             f"{'🎤' if (self.solution.task.type == TaskType.WRITING) else '📝'} <b>Задание:</b> {self.solution.task.title}\n"
             f"📅 <b>Дата решения:</b> {self.solution.created_at.strftime('%Y-%m-%d %H:%M:%S')}\n"
             f"🔄 <b>Статус:</b> {'✅Проверено' if self.mark else '⏳ В процессе проверки'}\n"
@@ -64,4 +69,6 @@ class ReportListModel(BaseModel):
         return self.total
 
     def to_string(self) -> str:
-        return "\n\n".join(report.to_string() for report in self.reports)
+        return "\n\n".join(
+            report.to_string(index + 1) for index, report in enumerate(self.reports)
+        )
